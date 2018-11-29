@@ -29,13 +29,13 @@
 \usepackage{microtype} % Slightly tweak font spacing for aesthetics
 
 \usepackage[english]{babel} % Language hyphenation and typographical rules
-
+\graphicspath{}
 \usepackage[hmarginratio=1:1,top=32mm,columnsep=20pt]{geometry} % Document margins
 \usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} % Custom captions under/above floats in tables or figures
 \usepackage{booktabs} % Horizontal rules in tables
 
 \usepackage{lettrine} % The lettrine is the first enlarged letter at the beginning of the text
-
+\usepackage[hyphens]{url}
 \usepackage{enumitem} % Customized lists
 \setlist[itemize]{noitemsep} % Make itemize lists more compact
 
@@ -66,8 +66,8 @@
 
 \setlength{\droptitle}{-4\baselineskip} % Move the title up
 
-\pretitle{\begin{center}\Huge\bfseries} % Article title formatting
-\posttitle{\end{center}} % Article title closing formatting
+\pretitle{\begin{center}\Huge\bfseries
+\posttitle{\end{center}}} % Article title closing formatting
 \title{Cloud Security: Asigurarea securit\u{a}\c{t}ii multi-tenant \^{i}n servicii cloud} % Article title
 \author{%
 \textsc{Gabriela Florina Pricop}\thanks{} \\[1ex] % Your name
@@ -81,7 +81,9 @@
 \date{\today} % Leave empty to omit a date
 \renewcommand{\maketitlehookd}{%
 \begin{abstract}
-\noindent \blindtext % Dummy abstract text - replace \blindtext with your abstract text
+\noindent 
+Securitatea in cadrul cloudului este considerata de o importanta majora, dat fiind interesul ridicat si numarului mare de migrari ale serviciile in cloud. Multitenancy introduce riscuri de securitate unice in cloud computing ca si rezultat al utilizarii de catre mai multi tenanti  a aceleiasi resurse hardware.  Scopul acestei lucrari e de explica unele concepte legate de  arhitectura Multi-tenancy, de a explora riscurile posibile din cloud computing si masurile care pot fi luate pentru a le estompa.
+
 \end{abstract}
 }
 
@@ -99,29 +101,100 @@
 \section{Introducere}
 
 \lettrine[nindent=0em,lines=3]{\^{I}}n arhitectura cloud-based, termenul \textit{\textbf{multi-tenant}} se refer\u{a} la organiza\c{t}iile, clien\c{t}ii \c{s}i consumatorii care partajeaz\u{a} infrastructura \c{s}i bazele de date, av\^{a}nd ca \c{s}i scop ob\c{t}inerea performan\c{t}ei \c{s}i reducerea costului. Cu alte cuvinte, este o arhitectur\u{a} software \^{i}n care o singur\u{a} instan\c{t}\u{a} a unui software ruleaz\u{a} pe un server \c{s}i serve\c{s}te tenan\c{t}i multiplii, unde un tenant este reprezentat printr-un grup de utilizatori care partajeaz\u{a} aceast\u{a} instan\c{t}\u{a} pe baza unor drepturi specifice. \\
-\par Cloud computing st\u{a} la baza serviciilor \textit{infrastructure as a service (IaaS)} \c{s}i \textit{software as a service (SaaS)}, care permit scalarea cu u\c{s}urin\c{t}\u{a} \c{s}i ad\u{a}ugarea de func\c{t}ionalitate la cerere. 
 
+ Cloud computing st\u{a} la baza serviciilor \textit{infrastructure as a service (IaaS)} \c{s}i \textit{software as a service (SaaS)}, care permit scalarea cu u\c{s}urin\c{t}\u{a} \c{s}i ad\u{a}ugarea de func\c{t}ionalitate la cerere. \\
 
-Astfel, o problem\u{a} major\u{a} a devenit asigurarea securit\u{a}\c{t}ii potrivite \c{s}i protejarea tenan\c{t}ilor prin izolarea acestora, impiedic\^{a}ndu-se accesul r\u{a}u inten\c{t}ionat la date \^{i}ntre tenan\c{t}i. Principala preocupare in prezent o constituie protejarea tenantilor prin securizarea si izolarea acestor servicii de expunerea datelor catre \textit{third-parties} [1]. Tehnicile prin care securitatea se asigura este strict dependenta de nivelul multi-tenancy.
+Astfel, o problem\u{a} major\u{a} a devenit asigurarea securit\u{a}\c{t}ii potrivite \c{s}i protejarea tenan\c{t}ilor prin izolarea acestora, impiedic\^{a}ndu-se accesul r\u{a}u inten\c{t}ionat la date \^{i}ntre tenan\c{t}i. Principala preocupare in prezent o constituie protejarea tenantilor prin securizarea si izolarea acestor servicii de expunerea datelor catre \textit{third-parties} [1]. Tehnicile prin care securitatea se asigura sunt strict dependente de nivelul multi-tenancy.\\
+
+Cloud computing a fost preluat cu usurinta de catre multe organizatii si afaceri, avand ca sis cop principal cresterea profitului prin scaderea costurilor si furnizarea clientilor o implementare mai rapida a serviciilor. Serviciile cloud, in marea majoritate,  minimizeaza costul total al detinerii de infrastructura IT, aceasta datorandu-se unui set de riscuri de Securitate introdus pentru izolarea si protejarea datelor care pot fi expuse catre third-parties.  \\
+
+Multitenancy permite utilizarea unui mediu cloud in care sunt pastrate datele si aplicatiile, cu costuri reduse, care sunt partajate intre diferite organizatii si client.  In modelul multitenanct, mai multe resurse si date de la user sunt stocate in acelasi computing cloud, find controlate si differentiate prin identificatory unici detinuti de useri individuali. Astfel, userii sunt considerati tenantii, carora li se atribuite diferite nivele de control care sa permita utilizarea acestor resurse pentru asigurarea nevoilor specifice. \\
 
 
 %------------------------------------------------
 
-\section{Methods}
+\section{Riscuri si masuri in Securitatea Cloud}
 
-Maecenas sed ultricies felis. Sed imperdiet dictum arcu a egestas. 
+In articolul \cite{1} se prezinta o problema majora cu care se confrunta arhitectura multitenancy si anume partajarea aceleasi resurse hardware, de unde vine si conceptul de asigurare a izolarii datelor. Un mediu vulnerabil din punct de vedere al securitatii retelei poate duce la atacuri nedorite intre tenanti. Principalul raspunzator pentru asigurarea  securitatii clientului  in fata posibilelor infiltrari in randul datelor si aplicatiilor este furnizorul de cloud. In aceasta sectiune se vor prezenta riscurile securitatii, precum si motodele prin care se pot diminua.
+
+\subsection{Multitenancy security threats}
+Un risc de securitate intalnit in aceasta arhitectura il reprezinta interferenta intre tenanti datorita sarcinilor de lucru, care pot sa  impacteze negativ performanta unui alt tenant daca sunt suprasolicitante. Un al treilea risc il reprezinta  asignarea resurselor catre consumatori a caror identitate si intentii sunt necunoscute, cee ace a dus la crearea unui strat de virtualizare care poate periclita toate masinile virtuale ce ruleaza pe host in cazul in care este compromise. De aici rezulta si incapacitatea de a monitoriza activitatile pe masina virtuala si permiterea unui utilizator malicios sa altereze startea acesteia. Straturile de virtualizare constau in sisteme software complexe care conduc la vulnerabilitati, permitand astfel unui user al masinii virtuale sa castige control asupra tuturor celorlalte msini virtuale care ruleaza pe acest host.
+
+Un al patrulea risc il reprezinta configurarea intr-un mod gresit a sistemelor multitenant sau prin modificarea unor controale necoordonate. Astfel, la modificarea infrastructurii care este partajata de mai multe tenanti, se poate permite unui teant sa primeasca acces la datele si resursele altora. 
+
+Un alt risc poate sa provina de la faptul ca, unii furnizori cloud stocheaza datele de la mai multi tenanti in aceeasi baza de date, avand ca sis cop reducerea costurilor. Un simplu request pentru stergerea de date poate duce la stergerea unor portiuni din baza de date neplanificate.
+
+\subsection{Arhitecting countermeasures for multitenancy security risk}
+In subsectiunea precedenta s-a discutat despre riscurile de  Securitate care pot sa apara in modelul cloud computing, in contextul arhitecturii multitenant. Masurile se iau in functie de cele trei categorii de riscuri:
+
+
+\begin{enumerate}
+\item	\textbf{Governance, Control si Auditing }
 \begin{itemize}
-\item Donec dolor arcu, rutrum id molestie in, viverra sed diam
-\item Curabitur feugiat
-\item turpis sed auctor facilisis
-\item arcu eros accumsan lorem, at posuere mi diam sit amet tortor
-\item Fusce fermentum, mi sit amet euismod rutrum
-\item sem lorem molestie diam, iaculis aliquet sapien tortor non nisi
-\item Pellentesque bibendum pretium aliquet
+\item [-] Aceste riscuri se aplica indifferent daca cloud-ul este IaaS, PaaS sau SaaS 
+\item [-] Se refera la serviciile cloud si la rolurile tenantilor care le utilizeaza\\
 \end{itemize}
-\blindtext % Dummy text
+\begin{enumerate}
+\item	Separation of Duties (SoD): \\
+- Se refera la abilitatea sistemelor de a separa un singur task, functie sau componenta in arii multiple de responsabilitate si asignarea lor la diferite roluri si indivizi.\\
+- Rolul sau este de elimina conflictele de interes si de a garanta ca niciun individ nu-si va putea asuma drepturi peste limita definite pentru rolul sau.\\
 
-Text requiring further explanation\footnote{Example footnote}.
+\item Auditing and client controls:\\
+-	Se logheaza toate actiunile ce modifica datele/configuratiile sistemului T.
+\end{enumerate}
+
+\item \textbf{Configuration, Design si Change Management}\\
+- Sunt mult mai evidente in mediile cloud PaaS si IaaS \\
+
+\begin{enumerate}
+\item	Trusted computing platform and environment: \\
+- Avantajele constau in faptul ca Host sau Guest dintr-un Iaas sau PaaS Cloud apartin simultand la domenii multiple diferite de Securitate si servesc mai multe subiecte prin diferite politici de Securitate\\
+
+\item Securing Shared Services:\\
+- Servicii partajate, disponibile fiecarui tenant, dar depend de tipul cloud computing.
+- In IaaS, fiecare mediu hostat al clientului e partitionat si controlat de o singura instanta a unui software virtual, de care depinde securitatea\\
+- In SaaS, fiecare instanta a aplicatiei hostate partajeaza o singura instanta a codului obiect, iar in cazul unei greseli sau memorie corupta, milioane de cplienti pot accesa datele celorlalti.\\
+- In Paas,  fiecare tenant intr-o arhitectura multitenant poate avea mai multe straturi a solutiei hostate, anume logica de business, logica de acces la date si stocare, logica de prezentare, adica hostat peste mai multe servere fizice; problema care se pune este fiecare parte a unei platforme a tenantului unde ruleaza ruleaza, risc care poate fi indepartat cu dependency map.\\
+
+\item  Network Configuration: \\
+- Se utilizeaza secure routing, firewalls, VPNs, VLANs si alte tehnologii de virtualizare care securizeaza traficul clientului. Pot sa apara probleme in cazul in care reteaua este proiectata instabil, astfel ca se poate compromite cu usurinta reteaua interna a unui tenant\\
+\end{enumerate}
+
+\item \textbf{Logical Security, Access Control si Encryption}
+- Gasite in preponderant la sistemele de Securitate cu acces individual la aplicatii, date, functii de afaceri intr-o arhitectura multitenant\\
+\begin{enumerate}
+\item 	Encryption protocols\\
+-	Fiecare tenant detine chei criptate, iar problema apare atunci cand cheia este criptata cu acelasi algoritm, iar daca la un tenant aceasta a fost compromisa, se va putea usor sparge cheia oricarui alt tenant\\
+-   Metodele folosite: \textit{predicate encryption} (se monitorizeaza cine obtine acces la datele criptate, userii primind acces doar la unele segmente) si \textit{homomorphic encryption} (ceia nu trebuie decriptata pentru procesare) \\
+
+\item 	Logical Authentication and Access Controls\\
+- In cazul autorizarii si autentificarii, dificultatea apare la controlarea datelor si resurselor aplicatiei, precum si accesul la acestea, impreuna cu mecanismele de control al accesului (reguli, politici de domenii, multi useri)
+- Masuri luate: RBAC ( Role-Based Access Control)
+\begin{itemize}
+    \item Userilor li se asignmeaza unul sau mai multe roluri
+    \item Privilegiile sunt asignate rolurilor, nu userilor
+    \item Rolurile  ierarhice sunt reduse la ontologii, deci se aplica permisiunile unui rol, nu unui tenant.
+\end{itemize}
+
+\item 	Identity and Access Management\\
+-  IAM (Identity and access management):  single sign-on, autorizarea clientilor in termenii identitatii lor peste mai multe cloud-uri\\
+\begin{itemize}
+    \item \textit{Federated Authentication}, OAuth sau OpenID
+    \item \textit{Federated acess management},  implica utilizarea unui third party, construind ''global metapolicy'' prin care se integreaza politicile fiecarui cloud\\
+\end{itemize}
+
+\end{enumerate}
+\end{enumerate}
+
+\section{Multitenancy Security Risks}
+\par Adesea se pune intrebarea daca serviciile cloud sunt mult sau mai putin sigure decat implementarile on-premise. Articolul \cite{2} are ca si scop explorarea riscurilor care privesc securitatea si controlul acesteia in serviciile cloud, in special in contextul multi-tenancy, lucru care va fi explicat in cadrul acestei sectiuni\\
+
+\subsection{Cloud Computing}
+\par Model care permite utilizarea omniprezenta si convenabila la o grupare partajata de resurse, printr-o conexiune la retea, unde prin resurse intelegem retea, servere, stocare, aplicatii si servicii. Aceste resurse pot fi furnizate intr-un mod rapid si procesate sau intrtinute printr-un effort minim depus sau printr-un serviciu care se ocupa de furnizarea acestora. \\
+\par Exista oun numar de modele fundamentale oferite de catre aceste providere de servicii cloud: Infrastructure-as-a-Service (IaaS), Platform-as-a-Service(PaaS) si Software-as-a-Service(SaaS), unde IaaS este cel mai utilizat model abstract.\\
+\par Multi-tenancy reprezinta cea mai importanta propunere in cazul cloud computing, avand radacini in promotorii SaaS, urmand sa se extinda si la serviciile PaaS si IaaS.\\
+
+
 
 %------------------------------------------------
 
@@ -170,12 +243,29 @@ A statement requiring citation \cite{Figueredo:2009dg}.
 
 \begin{thebibliography}{99} % Bibliography - this is intentionally simple in this template
 
-\bibitem[Figueredo and Wolf, 2009]{Figueredo:2009dg}
-Figueredo, A.~J. and Wolf, P. S.~A. (2009).
-\newblock Assortative pairing and life history strategy - a cross-cultural
-  study.
-\newblock {\em Human Nature}, 20:317--330.
+\bibitem 1 Brown, Wayne \& Anderson, Vince \& Tan, Qing. (2012).
+\newblock Multitenancy - Security Risks and Countermeasures. 
+\newblock Proceedings of the 2012 15th International Conference on Network-Based Information Systems, NBIS 2012. 7-13. 10.1109/NBiS.2012.142. 
+
+\bibitem 2 Paul G Dorey, Summer 2014.
+\newblock Multi-Tenancy Security Risks 
+\newblock Customer Expectations for Leading Cloud Service Provider - An Architectural Approach 
  
+ \bibitem 3  Aljahdali, H, Albatli, A, Garraghan, P et al. (3 more authors) (2014)
+\newblock Multi-tenancy in cloud computing.
+\newblock Proceedings of the 8th IEEE International Symposium on Service-Oriented System Engineering. 2014 IEEE 8th International Symposium on Service Oriented System Engineering (SOSE), 7-11 April 2014, Oxford, UK. IEEE , 344 - 351. ISBN 978-1-4799-2504-9
+ 
+\bibitem 4 K.Venkataramana, Prof.M.Padmavathamma
+\newblock Multi-Tenant Data Storage Security In Cloud Using Data Partition Encryption Technique 
+\newblock International Journal of Scientific \& Engineering Research, Volume 4, Issue 7, July-2013 6
+ISSN 2229-5518 
+ 
+ \bibitem 5 Securing Multi-Tenancy and Cloud Computing,  \url{https://www.juniper.net/us/en/local/pdf/whitepapers/2000381-en.pdf}
+ 
+ \bibitem 6 Cloud Security: Ensuring multi-tenant security in cloud services, 
+\url{https://searchtelecom.techtarget.com/tip/Cloud-Security-Ensuring-multi-tenant-security-in-cloud-services}
+
+
 \end{thebibliography}
 
 %----------------------------------------------------------------------------------------
